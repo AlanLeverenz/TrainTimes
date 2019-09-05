@@ -1,0 +1,8 @@
+.jumbotron {
+    background-image: url(../images/railroad-tracks-163518__340.jpg); 
+    color: rgb(225, 250, 202);
+    background-position: bottom;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
