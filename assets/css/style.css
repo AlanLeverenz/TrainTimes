@@ -6,3 +6,14 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+body {
+    font-size: 14px;
+}
+
+.card-header {
+    background-image: linear-gradient( to right, #b3fd88, rgb(241, 255, 228));
+    font-size: 1.25em;
+    font-weight: 700;
+    color: darkgreen;
+}

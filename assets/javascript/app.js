@@ -1,11 +1,4 @@
 
-// 6. Set up final destination.
-// 7. Set distance and anticipated arrival time.
-// 8. Calculate average speed between stations to arrive on time.
-// 9. Add a station delay in minutes.
-//10. Calculate the (increase in) speed required to get there on time.
-
-
 // Initialize Firebase
   // Your web app's Firebase configuration
   var firebaseConfig = {
@@ -32,13 +25,21 @@
     var destination = $("#destination-input").val().trim();
     var firstTrain = $("#first-train-input").val().trim();
     var frequency = $("#frequency-input").val().trim();
+    var station = $("#station-input").val().trim();
+    var distance = $("#distance-input").val().trim();
+    var interval = $("#interval-input").val().trim();
+    var delay = $("#delay-input").val().trim();
 
     // Creates local "temporary" object for holding train data
     var newTrain = {
       name: trainName,
       destination: destination,
       firstTrain: firstTrain,
-      frequency: frequency
+      frequency: frequency,
+      station: station,
+      distance: distance,
+      interval: interval,
+      delay: delay,
     };
   
     // Uploads train data to the database
@@ -49,7 +50,11 @@
     console.log(newTrain.destination);
     console.log(newTrain.firstTrain);
     console.log(newTrain.frequency);
-  
+    console.log(newTrain.station);
+    console.log(newTrain.distance);
+    console.log(newTrain.interval);
+    console.log(newTrain.delay);
+
     console.log("Train successfully added");
   
     // Clears all of the text-boxes
@@ -57,6 +62,10 @@
     $("#destination-input").val("");
     $("#first-train-input").val("");
     $("#frequency-input").val("");
+    $("#station-input").val("");
+    $("#distance-input").val("");
+    $("#interval-input").val("");
+    $("#delay-input").val("");
   });
   
   // Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
@@ -68,6 +77,10 @@
     var tDestination = childSnapshot.val().destination;
     var tFrequency = childSnapshot.val().frequency;
     var tFirstTrain = childSnapshot.val().firstTrain;
+    var tStation = childSnapshot.val().station;
+    var tDistance = childSnapshot.val().distance;
+    var tInterval = childSnapshot.val().interval;
+    var tDelay = childSnapshot.val().delay;
 
     // First Time (pushed back 1 year to make sure it comes before current time)
     var trainTime = moment(tFirstTrain, "HH:mm").subtract(1, "years");
@@ -91,10 +104,19 @@
         .format("hh:mm A");
     }
 
-    console.log("trainTime:",trainTime);
-    console.log("maxMoment:",maxMoment);
-    console.log("tMinutes:", tMinutes);
-    console.log("tArrival:", tArrival);
+    var normalSpeed = 0;
+    var delaySpeed = 0;
+    var tSpeedChange = 0;
+    var tSpeedPercentText = "";
+
+    // Compute speed change
+    if (tDelay > 0) {
+    normalSpeed = (tDistance / tInterval);
+    delaySpeed = (tDistance / (tInterval - tDelay));
+    tSpeedChange = ( delaySpeed - normalSpeed ) / delaySpeed;
+    tSpeedPercent = Math.round(tSpeedChange * 100) / 100;
+    tSpeedPercentText = "+" + (tSpeedPercent * 100) + "%";
+    }
   
     // Add each train's data into the table
     // $("#train-table > tbody").append(
@@ -104,40 +126,13 @@
         $("<td>").text(tDestination),
         $("<td>").text(tFrequency),
         $("<td>").text(tArrival),
-        $("<td>").text(tMinutes)
+        $("<td>").text(tMinutes),
+        $("<td>").text(tStation),
+        $("<td>").text(tDistance),
+        $("<td>").text(tInterval),
+        $("<td>").text(tDelay),
+        $("<td>").text(tSpeedPercentText),
       )
     );
   });
-  
-  // Assume the following situations.
-  
-  // (TEST 1)
-  // First Train of the Day is 3:00 AM
-  // Assume Train comes every 3 minutes.
-  // Assume the current time is 3:16 AM....
-  // What time would the next train be...? ( Let's use our brains first)
-  // It would be 3:18 -- 2 minutes away
-  
-  // (TEST 2)
-  // First Train of the Day is 3:00 AM
-  // Assume Train comes every 7 minutes.
-  // Assume the current time is 3:16 AM....
-  // What time would the next train be...? (Let's use our brains first)
-  // It would be 3:21 -- 5 minutes away
-  
-  // ==========================================================
-  
-  // Solved Mathematically
-  // Test case 1:
-  // 16 - 00 = 16
-  // 16 % 3 = 1 (Modulus is the remainder)
-  // 3 - 1 = 2 minutes away
-  // 2 + 3:16 = 3:18
-  
-  // Solved Mathematically
-  // Test case 2:
-  // 16 - 00 = 16
-  // 16 % 7 = 2 (Modulus is the remainder)
-  // 7 - 2 = 5 minutes away
-  // 5 + 3:16 = 3:21
   
