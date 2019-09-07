@@ -1,11 +1,4 @@
-// Steps to complete:
 
-// 1. Create Firebase link
-// 2. Create initial train data in database
-// 3. Create button for adding new trains - then update the html + update the database
-// 4. Create a way to retrieve trains from the trainlist.
-// 5. Create a way to calculate the time way. Using difference between start and current time.
-//    Then take the difference and modulus by frequency. (This step can be completed in either 3 or 4)
 // 6. Set up final destination.
 // 7. Set distance and anticipated arrival time.
 // 8. Calculate average speed between stations to arrive on time.
@@ -27,12 +20,9 @@
 
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-  
   var trainData = firebase.database();
-  
-  // 2. Populate Firebase Database with initial data (in this case, I did this via Firebase GUI)
 
-  // 3. Button for adding trains
+  // Button for adding trains
   $("#add-train-btn").on("click", function(event) {
     // Prevent the default form submit behavior
     event.preventDefault();
@@ -43,46 +33,6 @@
     var firstTrain = $("#first-train-input").val().trim();
     var frequency = $("#frequency-input").val().trim();
 
-    // ================================
-
-
-    console.log("=======");
-
-    // Assumptions
-    var tFrequency = 20;
-
-    var firstTime = "3:30 PM"
-    console.log("FIRST TIME: " + firstTime);
-
-    // First Time (pushed back 1 year to make sure it comes before current time)
-    var firstTimeConverted = moment(firstTime, "HH:mm").subtract(1, "years");
-    console.log(firstTimeConverted);
-
-    // Current Time
-    var currentTime = moment();
-    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-    // Difference between the times
-    var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
-    console.log("DIFFERENCE IN TIME: " + diffTime);
-
-    // Time apart (remainder)
-    var tRemainder = diffTime % tFrequency;
-    console.log("REMAINDER MINUTES UNTIL ARRIVAL: " + tRemainder);
-
-    // Minute Until Train
-    var tMinutesTillTrain = tFrequency - tRemainder;
-    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
-
-    // Next Train
-    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
-    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
-
-    console.log("=======");
-
-    //=================
-
-  
     // Creates local "temporary" object for holding train data
     var newTrain = {
       name: trainName,
@@ -109,8 +59,8 @@
     $("#frequency-input").val("");
   });
   
-  // 4. Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
-  trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
+  // Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
+    trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
     console.log(childSnapshot.val());
   
     // Store everything into a variable.
@@ -118,21 +68,20 @@
     var tDestination = childSnapshot.val().destination;
     var tFrequency = childSnapshot.val().frequency;
     var tFirstTrain = childSnapshot.val().firstTrain;
-  
-    var timeArr = tFirstTrain.split(":");
-    var trainTime = moment().hours(timeArr[0]).minutes(timeArr[1]);
+
+    // First Time (pushed back 1 year to make sure it comes before current time)
+    var trainTime = moment(tFirstTrain, "HH:mm").subtract(1, "years");
+    console.log("trainTime 2: " + trainTime);
+
     var maxMoment = moment.max(moment(), trainTime);
     var tMinutes;
     var tArrival;
   
-    // If the first train is later than the current time, sent arrival to the first train time
+    // If the first train is later than the current time, set arrival to the first train time
     if (maxMoment === trainTime) {
       tArrival = trainTime.format("hh:mm A");
       tMinutes = trainTime.diff(moment(), "minutes");
     } else {
-      // Calculate the minutes until arrival using hardcore math
-      // To calculate the minutes till arrival, take the current time in unix subtract the FirstTrain time
-      // and find the modulus between the difference and the frequency.
       var differenceTimes = moment().diff(trainTime, "minutes");
       var tRemainder = differenceTimes % tFrequency;
       tMinutes = tFrequency - tRemainder;
@@ -141,6 +90,9 @@
         .add(tMinutes, "m")
         .format("hh:mm A");
     }
+
+    console.log("trainTime:",trainTime);
+    console.log("maxMoment:",maxMoment);
     console.log("tMinutes:", tMinutes);
     console.log("tArrival:", tArrival);
   
