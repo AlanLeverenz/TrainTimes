@@ -1,22 +1,20 @@
+// Firebase config
+var firebaseConfig = {
+  apiKey: "AIzaSyAldJrR8jENWwMP0jYrHf2kvT92P6aYv7M",
+  authDomain: "train-awl.firebaseapp.com",
+  databaseURL: "https://train-awl.firebaseio.com",
+  projectId: "train-awl",
+  storageBucket: "",
+  messagingSenderId: "51393396868",
+  appId: "1:51393396868:web:c2c545709f249bdf1c82d1"
+};
 
 // Initialize Firebase
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyAldJrR8jENWwMP0jYrHf2kvT92P6aYv7M",
-    authDomain: "train-awl.firebaseapp.com",
-    databaseURL: "https://train-awl.firebaseio.com",
-    projectId: "train-awl",
-    storageBucket: "",
-    messagingSenderId: "51393396868",
-    appId: "1:51393396868:web:c2c545709f249bdf1c82d1"
-  };
+firebase.initializeApp(firebaseConfig);
+var trainData = firebase.database();
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  var trainData = firebase.database();
-
-  // Button for adding trains
-  $("#add-train-btn").on("click", function(event) {
+// Button for adding trains
+$("#add-train-btn").on("click", function(event) {
     // Prevent the default form submit behavior
     event.preventDefault();
   
@@ -66,10 +64,11 @@
     $("#distance-input").val("");
     $("#interval-input").val("");
     $("#delay-input").val("");
-  });
+
+}); // end add-train-btn click
   
-  // Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
-    trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
+// Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
+trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
     console.log(childSnapshot.val());
   
     // Store everything into a variable.
@@ -92,17 +91,17 @@
   
     // If the first train is later than the current time, set arrival to the first train time
     if (maxMoment === trainTime) {
-      tArrival = trainTime.format("hh:mm A");
-      tMinutes = trainTime.diff(moment(), "minutes");
+        tArrival = trainTime.format("hh:mm A");
+        tMinutes = trainTime.diff(moment(), "minutes");
     } else {
-      var differenceTimes = moment().diff(trainTime, "minutes");
-      var tRemainder = differenceTimes % tFrequency;
-      tMinutes = tFrequency - tRemainder;
-      // To calculate the arrival time, add the tMinutes to the current time
-      tArrival = moment()
-        .add(tMinutes, "m")
-        .format("hh:mm A");
-    }
+        var differenceTimes = moment().diff(trainTime, "minutes");
+        var tRemainder = differenceTimes % tFrequency;
+        tMinutes = tFrequency - tRemainder;
+        // To calculate the arrival time, add tMinutes to the current time
+        tArrival = moment()
+          .add(tMinutes, "m")
+          .format("hh:mm A");
+    } // end else
 
     var normalSpeed = 0;
     var delaySpeed = 0;
@@ -116,11 +115,11 @@
     tSpeedChange = ( delaySpeed - normalSpeed ) / delaySpeed;
     tSpeedPercent = Math.round(tSpeedChange * 100) / 100;
     tSpeedPercentText = "+" + (tSpeedPercent * 100) + "%";
-    }
+    } // end if
   
     // Add each train's data into the table
     // $("#train-table > tbody").append(
-        $("#train-table tbody").append(
+      $("#train-table tbody").append(
         $("<tr>").append(
         $("<td>").text(tName),
         $("<td>").text(tDestination),
@@ -132,7 +131,7 @@
         $("<td>").text(tInterval),
         $("<td>").text(tDelay),
         $("<td>").text(tSpeedPercentText),
-      )
-    );
-  });
+      ) // end append
+    ); // end child-added function
+  }); // end child-added
   
