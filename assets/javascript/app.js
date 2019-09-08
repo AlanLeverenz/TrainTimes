@@ -131,7 +131,7 @@ trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
         $("<td>").text(tInterval),
         $("<td>").text(tDelay),
         $("<td>").text(tSpeedPercentText),
-      ) // end append
-    ); // end child-added function
+      ) // end append tbody
+    ); // end append tr
   }); // end child-added
   
