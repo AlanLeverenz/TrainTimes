@@ -13,6 +13,15 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var trainData = firebase.database();
 
+  // onclick remove all train table items (clear Firebase)
+  $("#remove-all-trains-button").on("click", function(event) {
+    event.preventDefault();
+    // empty the tbody rows 
+    $("#train-table > tbody").empty();
+    // clear the Firebase database
+    trainData.ref().remove();
+});
+
 // Button for adding trains
 $("#add-train-btn").on("click", function(event) {
     // Prevent the default form submit behavior
@@ -68,7 +77,7 @@ $("#add-train-btn").on("click", function(event) {
 }); // end add-train-btn click
   
 // Create Firebase event for adding trains to the database and a row in the html when a user adds an entry
-trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
+trainData.ref().on("child_added", function(childSnapshot) {
     console.log(childSnapshot.val());
   
     // Store everything into a variable.
@@ -115,23 +124,27 @@ trainData.ref().on("child_added", function(childSnapshot, prevChildKey) {
     tSpeedChange = ( delaySpeed - normalSpeed ) / delaySpeed;
     tSpeedPercent = Math.round(tSpeedChange * 100) / 100;
     tSpeedPercentText = "+" + (tSpeedPercent * 100) + "%";
-    } // end if
+    }
+    if (delaySpeed == Infinity) {
+      tSpeedPercentText = 'Delay';
+    }
+    // end if
   
     // Add each train's data into the table
     // $("#train-table > tbody").append(
       $("#train-table tbody").append(
-        $("<tr>").append(
-        $("<td>").text(tName),
-        $("<td>").text(tDestination),
-        $("<td>").text(tFrequency),
-        $("<td>").text(tArrival),
-        $("<td>").text(tMinutes),
-        $("<td>").text(tStation),
-        $("<td>").text(tDistance),
-        $("<td>").text(tInterval),
-        $("<td>").text(tDelay),
-        $("<td>").text(tSpeedPercentText),
-      ) // end append tbody
-    ); // end append tr
-  }); // end child-added
+          $("<tr>").append(
+            $("<td>").text(tName),
+            $("<td>").text(tDestination),
+            $("<td>").text(tFrequency),
+            $("<td>").text(tArrival),
+            $("<td>").text(tMinutes),
+            $("<td>").text(tStation),
+            $("<td>").text(tDistance),
+            $("<td>").text(tInterval),
+            $("<td>").text(tDelay),
+            $("<td>").text(tSpeedPercentText),
+          ) // end append tbody
+      ); // end append tr
+}); // end child-added
   

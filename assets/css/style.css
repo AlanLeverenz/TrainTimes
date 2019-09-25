@@ -17,3 +17,11 @@ body {
     font-weight: 700;
     color: darkgreen;
 }
+
+#remove-all-trains-button {
+    float: right;
+}
+
+.card-body {
+    padding-bottom: 0;
+}
