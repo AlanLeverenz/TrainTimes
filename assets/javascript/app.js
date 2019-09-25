@@ -125,7 +125,7 @@ trainData.ref().on("child_added", function(childSnapshot) {
     tSpeedPercent = Math.round(tSpeedChange * 100) / 100;
     tSpeedPercentText = "+" + (tSpeedPercent * 100) + "%";
     }
-    if (delaySpeed == Infinity) {
+    if (delaySpeed == Infinity || delaySpeed < 0) {
       tSpeedPercentText = 'Delay';
     }
     // end if
